@@ -5,11 +5,9 @@
 # $Log:$
 #
 CC=  gcc  # gcc or g++
-
 CFLAGS=-g -Wall -DNORMALUNIX -DLINUX # -DUSEASM 
 LDFLAGS=-L/usr/X11R6/lib
-LIBS=-lXext -lX11 -lnsl -lm
-
+LIBS=-lXext -lX11 -lnsl -lm -L./home/shrek/DUST/rust/target/debug -lrustlib  # rust lib path
 # subdirectory for objects
 O=linux
 
@@ -77,16 +75,24 @@ OBJS=				\
 		$(O)/info.o				\
 		$(O)/sounds.o
 
-all:	 $(O)/linuxxdoom
+# Add the Rust build step
+rustlib:
+	cd rust && cargo build
+
+# Main target that compiles and links everything
+all:	$(O)/linuxxdoom
 
 clean:
 	rm -f *.o *~ *.flc
 	rm -f linux/*
+	cd rust && cargo clean
 
-$(O)/linuxxdoom:	$(OBJS) $(O)/i_main.o
+# Build C object files and link with the Rust library
+$(O)/linuxxdoom:	$(OBJS) $(O)/i_main.o rustlib
 	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) $(O)/i_main.o \
 	-o $(O)/linuxxdoom $(LIBS)
 
+# Compile C files to object files
 $(O)/%.o:	%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
