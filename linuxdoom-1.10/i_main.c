@@ -31,15 +31,16 @@ rcsid[] = "$Id: i_main.c,v 1.4 1997/02/03 22:45:10 b1 Exp $";
 #include "m_argv.h"
 #include "d_main.h"
 
-int
-main
-( int		argc,
-  char**	argv ) 
-{ 
-    myargc = argc; 
-    myargv = argv; 
- 
-    D_DoomMain (); 
+// rust function main
+extern void rust_main();
+
+int main(int argc, char** argv) {
+    // myargc = argc;   //testing if we really need doomdef.h
+    // myargv = argv;   //keep for now imo
+
+    // Call the Rust main function
+    rust_main();
 
     return 0;
-} 
+}
+
